@@ -1,0 +1,14 @@
+{
+  "[go]": {
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    
+    "editor.defaultFormatter": "golang.go"
+  },
+
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": ["--fast"]
+}
