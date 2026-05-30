@@ -8,10 +8,13 @@ import (
 
 type SwaggerBuilder struct {
 	document *SwaggerDocument /* `json:"document"` */
+	route    *RouteBuilder
 }
 
 func NewSwaggerBuilder(title string, description string, version string) *SwaggerBuilder {
 	return &SwaggerBuilder{
+		route: nil,
+
 		document: &SwaggerDocument{
 			Openapi: "3.0.4",
 
@@ -20,11 +23,13 @@ func NewSwaggerBuilder(title string, description string, version string) *Swagge
 				Descriptiotn: description,
 				Version:      version,
 			},
+
+			Paths: map[string]map[string]Path{},
 		},
 	}
 }
 
-type DocumentRoutePayload struct {
+type RoutePayload struct {
 	Method      string   `json:"method"`
 	Path        string   `json:"path"`
 	Tags        []string `json:"tags"`
@@ -34,16 +39,18 @@ type DocumentRoutePayload struct {
 	Parameter any
 	Query     any
 	Body      any
+	Responses map[string]Response
 }
 
-type Route = DocumentRoutePayload
+type Route = RoutePayload
 
-func (this *SwaggerBuilder) AddRoute(payload DocumentRoutePayload) *SwaggerBuilder {
+func (this *SwaggerBuilder) AddRoute(payload RoutePayload) *SwaggerBuilder {
 	method := strings.ToLower(payload.Method)
 	path := FormatRoutePath(payload.Path)
+	httpMethods := []string{"get", "put", "delete", "options", "patch", "post"}
 
 	// validation step
-	if !slices.Contains([]string{"get", "put", "delete", "options", "patch", "post"}, method) || payload.Path == "" {
+	if !slices.Contains(httpMethods, method) || payload.Path == "" {
 		return this
 	}
 
@@ -83,7 +90,7 @@ func (this SwaggerBuilder) CreateBody(body any) Body {
 	}
 }
 
-func (this *SwaggerBuilder) CreateParameters(payload DocumentRoutePayload) []Parameter {
+func (this *SwaggerBuilder) CreateParameters(payload RoutePayload) []Parameter {
 
 	// Copy of path
 	parameters := []Parameter{}
@@ -96,43 +103,48 @@ func (this *SwaggerBuilder) CreateParameters(payload DocumentRoutePayload) []Par
 		}
 
 		parameter := payload.Parameter
+
 		if in == "query" {
 			parameter = payload.Query
 		}
 
 		t := reflect.TypeOf(parameter)
 
-		if t.Kind() == reflect.Pointer {
-			t = t.Elem()
+		tempParams := TypeToParam(t)
+		for index := range tempParams {
+			tempParams[index].In = in
 		}
 
-		if t.Kind() != reflect.Struct {
-			continue
-		}
-
-		for index := range t.NumField() {
-			field := t.Field(index)
-
-			name := field.Tag.Get("json")
-
-			if name == "" {
-				name = field.Name
-			}
-
-			parameter := Parameter{
-				In:       in,
-				Name:     name,
-				Required: true,
-				Schema: map[string]any{
-					"type": TypeToSwagger(field.Type.Kind()),
-				},
-			}
-			parameters = append(parameters, parameter)
-		}
+		parameters = append(parameters, tempParams...)
 
 	}
 
 	return parameters
+}
+
+func (this *SwaggerBuilder) Route(method string, path string) *RouteBuilder {
+
+	if this.route != nil {
+		return this.route
+	}
+
+	builder := NewRouteBuilder(path, method)
+	return builder
+}
+
+func (this *SwaggerBuilder) Add(route *RouteBuilder) {
+	path := route.Build()
+
+	for key, p := range path {
+		if this.document.Paths[key] == nil {
+			this.document.Paths[key] = map[string]Path{}
+		}
+
+		for method, r := range p {
+			this.document.Paths[key][method] = r
+		}
+	}
+
 }
 
 func (this *SwaggerBuilder) Build() *SwaggerDocument {

@@ -77,6 +77,40 @@ func StructToSchema(t reflect.Type) Schema {
 
 }
 
+func TypeToParam(t reflect.Type) []Parameter {
+	if t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+
+	if t.Kind() != reflect.Struct {
+		return []Parameter{}
+	}
+
+	parameters := []Parameter{}
+
+	for index := range t.NumField() {
+		field := t.Field(index)
+
+		name := field.Tag.Get("json")
+
+		if name == "" {
+			name = field.Name
+		}
+
+		parameter := Parameter{
+			// In:       in,
+			Name:     name,
+			Required: true,
+			Schema: Schema{
+				Type: TypeToSwagger(field.Type.Kind()),
+			},
+		}
+		parameters = append(parameters, parameter)
+	}
+
+	return parameters
+}
+
 func FormatRoutePath(endpoint string) string {
 	endpoint = path.Clean(endpoint)
 

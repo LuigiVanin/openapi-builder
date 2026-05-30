@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	swg "github.com/LuigiVanin/swagger-builder/lib"
+	sb "github.com/LuigiVanin/swagger-builder/lib"
 )
 
 type Parameter struct {
@@ -27,34 +27,49 @@ type Body struct {
 func main() {
 	fmt.Println("Hello World!")
 
-	builder := swg.NewSwaggerBuilder(
+	builder := sb.NewSwaggerBuilder(
 		"Test API",
 		"This is a test API",
 		"1.0.0",
 	)
 
+	builder.Add(
+		builder.Route("POST", "test/").
+			AddTag("Teste").
+			AddPathParam("id", "integer").
+			AddQueryParam("name", "string").
+			AddBody(Body{}, sb.Options{Description: "main body hahaha", Required: true}),
+	)
+
 	builder = builder.
-		AddRoute(swg.Route{
-			Path:      "/test",
-			Method:    "POST",
+		AddRoute(sb.Route{
+			Method: "GET",
+			Path:   "/test",
+			Tags:   []string{"Teste"},
+
 			Parameter: Parameter{},
 			Query:     Query{},
-		}).
-		AddRoute(swg.Route{
-			Path:   "/test",
-			Method: "PUT",
-		}).
-		AddRoute(swg.Route{
-			Path:      "/test/{id}",
-			Method:    "GET",
-			Parameter: Parameter{},
-		}).
-		AddRoute(swg.Route{
-			Path:      "/test/{id}",
-			Method:    "GET",
-			Parameter: Parameter{},
-			Body:      Body{},
 		})
+
+	builder.AddRoute(sb.Route{
+		Path:   "/test",
+		Method: "PUT",
+	})
+
+	builder.Add(
+		builder.Route("POST", "customer"),
+	)
+	// 	AddRoute(sb.Route{
+	// 		Path:      "/test/{id}",
+	// 		Method:    "GET",
+	// 		Parameter: Parameter{},
+	// 	}).
+	// 	AddRoute(sb.Route{
+	// 		Path:      "/test/{id}",
+	// 		Method:    "GET",
+	// 		Parameter: Parameter{},
+	// 		Body:      Body{},
+	// 	})
 
 	document := builder.Build()
 	err := document.Write()

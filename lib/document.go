@@ -10,7 +10,7 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-type SwaggerComponent struct {
+type OpenapiComponent struct {
 }
 
 type Path struct {
@@ -19,7 +19,7 @@ type Path struct {
 
 	Tags []string `json:"tags,omitempty"`
 
-	Responses map[string]SwaggerResponse `json:"responses,omitempty"`
+	Responses map[string]Response `json:"responses,omitempty"`
 
 	Parameters []Parameter `json:"parameters,omitempty"`
 
@@ -59,18 +59,20 @@ type Body struct {
 	Description string                     `json:"description"`
 	Required    bool                       `json:"required"`
 	Content     map[string]MediaTypeObject `json:"content,omitempty"`
+	MediaType   string                     `json:"-"`
 }
 
-type SwaggerResponse struct {
-	Description string          `json:"description"`
-	Content     MediaTypeObject `json:"content"`
+type Response struct {
+	Description string                     `json:"description"`
+	Content     map[string]MediaTypeObject `json:"content"`
 }
 
 type Parameter struct {
-	Name     string         `json:"name"`
-	In       string         `json:"in"`
-	Schema   map[string]any `json:"schema"`
-	Required bool           `json:"required"`
+	Name        string `json:"name"`
+	In          string `json:"in"`
+	Schema      Schema `json:"schema"`
+	Required    bool   `json:"required"`
+	Description string `json:"description"`
 }
 
 type SwaggerInfo struct {
@@ -84,9 +86,9 @@ type SwaggerDocument struct {
 
 	Info SwaggerInfo `json:"info"`
 
-	Components map[string]SwaggerComponent `json:"components,omitempty"`
+	Components map[string]OpenapiComponent `json:"components,omitempty"`
 
-	Paths map[string]map[string]Path `json:"paths"`
+	Paths map[string]map[string]Path `json:"paths,omitempty"`
 	//        ^ PATH     ^ METHOD
 }
 
@@ -94,6 +96,21 @@ type WriteOptions struct {
 	Formats    []string
 	FolderPath string
 	FileName   string
+}
+
+func (this *SwaggerDocument) Output(format string) ([]byte, error) {
+
+	var output []byte
+	var err error
+
+	switch format {
+	case "yaml":
+		output, err = yaml.Marshal(this)
+	case "json":
+		output, err = json.MarshalIndent(this, "", "\t")
+	}
+
+	return output, err
 }
 
 func (this *SwaggerDocument) Write(options ...WriteOptions) error {
@@ -114,15 +131,7 @@ func (this *SwaggerDocument) Write(options ...WriteOptions) error {
 			continue
 		}
 
-		var output []byte
-		var err error
-
-		switch format {
-		case "yaml":
-			output, err = yaml.Marshal(this)
-		case "json":
-			output, err = json.MarshalIndent(this, "", "\t")
-		}
+		output, err := this.Output(format)
 
 		if err != nil {
 			fmt.Println("Erro ao converter para Yaml")
