@@ -16,6 +16,14 @@ type Query struct {
 	Jump     bool
 }
 
+type Body struct {
+	Id        string    `json:"id"`
+	Name      string    `json:"name"`
+	Query     []Query   `json:"query"`
+	Parameter Parameter `json:"parameter"`
+	Teste     map[string]string
+}
+
 func main() {
 	fmt.Println("Hello World!")
 
@@ -40,6 +48,12 @@ func main() {
 			Path:      "/test/{id}",
 			Method:    "GET",
 			Parameter: Parameter{},
+		}).
+		AddRoute(swg.Route{
+			Path:      "/test/{id}",
+			Method:    "GET",
+			Parameter: Parameter{},
+			Body:      Body{},
 		})
 
 	document := builder.Build()

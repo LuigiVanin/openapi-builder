@@ -10,30 +10,10 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-type Method = string
-type PathName = string
-type MediaType = string
-
 type SwaggerComponent struct {
 }
 
-type Content struct {
-	Schema map[string]any `json:"schema"`
-}
-
-type SwaggerResponse struct {
-	Description string                `json:"description"`
-	Content     map[MediaType]Content `json:"content"`
-}
-
-type SwaggerParameter struct {
-	Name     string         `json:"name"`
-	In       string         `json:"in"`
-	Schema   map[string]any `json:"schema"`
-	Required bool           `json:"required"`
-}
-
-type SwaggerPath struct {
+type Path struct {
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
 
@@ -41,12 +21,61 @@ type SwaggerPath struct {
 
 	Responses map[string]SwaggerResponse `json:"responses,omitempty"`
 
-	Parameters []SwaggerParameter `json:"parameters,omitempty"`
+	Parameters []Parameter `json:"parameters,omitempty"`
+
+	RequestBody Body `json:"requestBody,omitempty"`
+}
+
+type Items struct {
+	Type       string            `json:"type,omitempty"`
+	Format     string            `json:"format,omitempty"`
+	Properties map[string]Schema `json:"properties,omitempty"`
+	Ref        string            `json:"$ref,omitempty"`
+}
+
+type Schema struct {
+	Type       string            `json:"type,omitempty"`
+	Format     string            `json:"format,omitempty"`
+	Items      Items             `json:"items,omitempty"`
+	Properties map[string]Schema `json:"properties,omitempty"`
+	Ref        string            `json:"$ref,omitempty"`
+}
+
+func (this Schema) ToItems() Items {
+	return Items{
+		Type:       this.Type,
+		Properties: this.Properties,
+		Ref:        this.Ref,
+		Format:     this.Format,
+	}
+}
+
+type MediaTypeObject struct {
+	Schema Schema `json:"schema,omitempty"`
+	// example, examples, encoding... podem entrar aqui depois
+}
+
+type Body struct {
+	Description string                     `json:"description"`
+	Required    bool                       `json:"required"`
+	Content     map[string]MediaTypeObject `json:"content,omitempty"`
+}
+
+type SwaggerResponse struct {
+	Description string          `json:"description"`
+	Content     MediaTypeObject `json:"content"`
+}
+
+type Parameter struct {
+	Name     string         `json:"name"`
+	In       string         `json:"in"`
+	Schema   map[string]any `json:"schema"`
+	Required bool           `json:"required"`
 }
 
 type SwaggerInfo struct {
 	Title        string `json:"title"`
-	Descriptiotn string `json:"descriptiotn"`
+	Descriptiotn string `json:"description"`
 	Version      string `json:"version"`
 }
 
@@ -57,7 +86,8 @@ type SwaggerDocument struct {
 
 	Components map[string]SwaggerComponent `json:"components,omitempty"`
 
-	Paths map[PathName]map[Method]SwaggerPath `json:"paths"`
+	Paths map[string]map[string]Path `json:"paths"`
+	//        ^ PATH     ^ METHOD
 }
 
 type WriteOptions struct {

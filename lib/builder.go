@@ -33,13 +33,14 @@ type DocumentRoutePayload struct {
 
 	Parameter any
 	Query     any
+	Body      any
 }
 
 type Route = DocumentRoutePayload
 
 func (this *SwaggerBuilder) AddRoute(payload DocumentRoutePayload) *SwaggerBuilder {
-	method := Method(strings.ToLower(payload.Method))
-	path := PathName(FormatRoutePath(payload.Path))
+	method := strings.ToLower(payload.Method)
+	path := FormatRoutePath(payload.Path)
 
 	// validation step
 	if !slices.Contains([]string{"get", "put", "delete", "options", "patch", "post"}, method) || payload.Path == "" {
@@ -47,30 +48,45 @@ func (this *SwaggerBuilder) AddRoute(payload DocumentRoutePayload) *SwaggerBuild
 	}
 
 	if this.document.Paths == nil {
-		this.document.Paths = map[PathName]map[Method]SwaggerPath{}
+		this.document.Paths = map[string]map[string]Path{}
 	}
 
 	if this.document.Paths[path] == nil {
-		this.document.Paths[path] = map[Method]SwaggerPath{}
+		this.document.Paths[path] = map[string]Path{}
 	}
 
-	this.document.Paths[path][method] = SwaggerPath{
+	this.document.Paths[path][method] = Path{
 		Summary:     payload.Summary,
 		Description: payload.Description,
 		Tags:        payload.Tags,
-		Parameters:  this.CreateSwaggerParameters(payload),
+		Parameters:  this.CreateParameters(payload),
+		RequestBody: this.CreateBody(payload.Body),
 	}
 
 	return this
 }
 
-func (this *SwaggerBuilder) CreateSwaggerParameters(payload DocumentRoutePayload) []SwaggerParameter {
-	if this.document.Paths[payload.Path] == nil {
-		return []SwaggerParameter{}
+func (this SwaggerBuilder) CreateBody(body any) Body {
+
+	if body == nil {
+		return Body{}
 	}
 
+	t := reflect.TypeOf(body)
+
+	schema := StructToSchema(t)
+
+	return Body{
+		Description: "",
+		Required:    true,
+		Content:     map[string]MediaTypeObject{"application/json": {Schema: schema}},
+	}
+}
+
+func (this *SwaggerBuilder) CreateParameters(payload DocumentRoutePayload) []Parameter {
+
 	// Copy of path
-	parameters := []SwaggerParameter{}
+	parameters := []Parameter{}
 
 	for _, in := range []string{"path", "query"} {
 
@@ -86,7 +102,7 @@ func (this *SwaggerBuilder) CreateSwaggerParameters(payload DocumentRoutePayload
 
 		t := reflect.TypeOf(parameter)
 
-		if t.Kind() == reflect.Ptr {
+		if t.Kind() == reflect.Pointer {
 			t = t.Elem()
 		}
 
@@ -103,7 +119,7 @@ func (this *SwaggerBuilder) CreateSwaggerParameters(payload DocumentRoutePayload
 				name = field.Name
 			}
 
-			parameter := SwaggerParameter{
+			parameter := Parameter{
 				In:       in,
 				Name:     name,
 				Required: true,
