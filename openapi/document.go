@@ -118,7 +118,7 @@ func (this *Document) Output(format string) ([]byte, error) {
 func (this *Document) Write(options ...WriteOptions) error {
 	option := WriteOptions{
 		Formats:    []string{"yaml", "json"},
-		FolderPath: "openapi",
+		FolderPath: "specs",
 		FileName:   "index",
 	} // default options
 

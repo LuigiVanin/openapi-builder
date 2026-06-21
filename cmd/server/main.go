@@ -11,7 +11,7 @@ import (
 func main() {
 	fmt.Println("Hello World!")
 
-	spec, err := os.ReadFile("openapi/index.yaml")
+	spec, err := os.ReadFile("specs/index.yaml")
 
 	if err != nil {
 		fmt.Println("Erro: ", err.Error())

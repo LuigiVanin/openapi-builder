@@ -1,5 +1,5 @@
 
-# OAS Builder for Swagger
+# Open Api Builder for Swagger
 
 ## Concepts
 
@@ -81,6 +81,7 @@ doc.Write()
 
 ## TODO
 
+### Features
  - [x] Router Create Approch 
    - [x] Add Parameters
      - [x] Add Path
@@ -94,16 +95,20 @@ doc.Write()
      - [x] Add Query
    - [x] Add Body
    - [x] Add Response
-   - [] Metadata
- - [] Multiple Media Types - curretly only `application/json`
- - [] Ref notation on each Schema
- - [] More Options Document
- - [] Tests
-  - [] Document tests
-  - [] Spec Document Builder tests
-  - [] Route builder tests
-  - [] Utils test
- - [] Library publication
+   - [ ] Metadata
+ - [ ] Multiple Media Types - curretly only `application/json`
+ - [ ] Ref notation on each Schema
+ - [ ] More Options Document
+ - [ ] Tests
+  - [ ] Document tests
+  - [ ] Spec Document Builder tests
+  - [ ] Route builder tests
+  - [ ] Utils test
+ - [ ] Library publication
+
+### Improvements
+ - [ ] Json format always have empty `items: {}` field
+
 
 
 
