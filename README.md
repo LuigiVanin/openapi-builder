@@ -1,4 +1,9 @@
-### Concept 1
+
+# OAS Builder for Swagger
+
+## Concepts
+
+### Concept 1 - Declarative
 
 Too verbose and it will require a lot of boiler plate that is not infered by any LSP, it would make harder to use. Also, extend information its pretty much impossible, to add a description to a path it would require a new attribute on the Route struct (?), a description to a bodyRequest? even harder. 
 
@@ -20,7 +25,7 @@ doc := builder.Build()
 doc.Write()
 ```
 
-### Concept 2
+### Concept 2 (Discarted)
 
 A better ideia of DX, but I dont think it is practical to implement it. The ideia is to expose a RouteBuiler struct via SwaggerBuilder and then construct the document Route per Route, the problem lives that this RouteBuilder would be "fake", it would have been implemented in the SwaggerBuilder it self so the Push method could work. Another caveat is the fact that if the user doesnt Push a Route before skipping to the next route building a error could happen.
 
@@ -37,7 +42,7 @@ doc := builder.Build()
 doc.Write()
 ```
 
-Concept 3
+Concept 3 (Discarted)
 
 ```go
 builder := sb.NewSwaggerBuilder() 
@@ -54,7 +59,7 @@ doc := builder.Build()
 doc.Write()
 ```
 
-Concept 3.5
+Concept 4 - Fluent / Builder
 
 ```go
 builder := sb.NewSwaggerBuilder() 
@@ -71,3 +76,28 @@ builder.Add(
 doc := builder.Build()
 doc.Write()
 ```
+
+## TODO
+
+ - [x] Router Create Approch 
+   - [x] Add Parameters
+     - [x] Add Path
+     - [x] Add Query
+   - [x] Add Body
+   - [x] Add Response
+   - [x] Metadata (via options)
+ - [x] Router Builder Approch
+   - [x] Add Parameters
+     - [x] Add Path
+     - [x] Add Query
+   - [x] Add Body
+   - [x] Add Response
+   - [] Metadata
+ - [] Multiple Media Types - curretly only `application/json`
+ - [] Ref notation on each Schema
+ - [] More Options Document
+ - [] Tests
+ - [] Library publication
+
+
+

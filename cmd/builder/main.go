@@ -24,6 +24,23 @@ type Body struct {
 	Teste     map[string]string
 }
 
+type Response struct {
+	Success   string    `json:"success"`
+	Id        string    `json:"id"`
+	Name      string    `json:"name"`
+	Query     []Query   `json:"query"`
+	Parameter Parameter `json:"parameter"`
+
+	Body Body `json:"body"`
+
+	Teste map[string]string
+}
+
+type Error struct {
+	Error  bool   `json:"error"`
+	Reason string `json:"reason"`
+}
+
 func main() {
 	fmt.Println("Hello World!")
 
@@ -34,7 +51,7 @@ func main() {
 	)
 
 	builder.Add(
-		builder.Route("POST", "test/").
+		builder.Route("POST", "test/", sb.Options{Summary: "Resumo do teste", Description: "Descrição do teste"}).
 			AddTag("Teste").
 			AddPathParam("id", "integer").
 			AddQueryParam("name", "string").
@@ -54,10 +71,17 @@ func main() {
 	builder.AddRoute(sb.Route{
 		Path:   "/test",
 		Method: "PUT",
+		Body:   Body{},
+		Responses: map[string]any{
+			"200": Response{},
+			"404": Error{},
+		},
 	})
 
 	builder.Add(
-		builder.Route("POST", "customer"),
+		builder.Route("POST", "/customer").
+			AddResponse(200, Response{}).
+			AddResponse(404, Error{}),
 	)
 	// 	AddRoute(sb.Route{
 	// 		Path:      "/test/{id}",

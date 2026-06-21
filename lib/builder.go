@@ -1,6 +1,7 @@
 package swagger_builder
 
 import (
+	"maps"
 	"reflect"
 	"slices"
 	"strings"
@@ -19,9 +20,9 @@ func NewSwaggerBuilder(title string, description string, version string) *Swagge
 			Openapi: "3.0.4",
 
 			Info: SwaggerInfo{
-				Title:        title,
-				Descriptiotn: description,
-				Version:      version,
+				Title:       title,
+				Description: description,
+				Version:     version,
 			},
 
 			Paths: map[string]map[string]Path{},
@@ -39,7 +40,10 @@ type RoutePayload struct {
 	Parameter any
 	Query     any
 	Body      any
-	Responses map[string]Response
+
+	// String is the response status
+	// The format of the response will always be application/json
+	Responses map[string]any
 }
 
 type Route = RoutePayload
@@ -68,9 +72,29 @@ func (this *SwaggerBuilder) AddRoute(payload RoutePayload) *SwaggerBuilder {
 		Tags:        payload.Tags,
 		Parameters:  this.CreateParameters(payload),
 		RequestBody: this.CreateBody(payload.Body),
+		Responses:   this.CreateResponse(payload.Responses),
 	}
 
 	return this
+}
+
+func (this SwaggerBuilder) CreateResponse(responses map[string]any) map[string]Response {
+	r := map[string]Response{}
+
+	for key, value := range maps.All(responses) {
+		content := map[string]MediaTypeObject{}
+		t := reflect.TypeOf(value)
+
+		content["application/json"] = MediaTypeObject{
+			Schema: TypeToSchema(t),
+		}
+
+		r[key] = Response{
+			Content: content,
+		}
+	}
+
+	return r
 }
 
 func (this SwaggerBuilder) CreateBody(body any) Body {
@@ -81,7 +105,7 @@ func (this SwaggerBuilder) CreateBody(body any) Body {
 
 	t := reflect.TypeOf(body)
 
-	schema := StructToSchema(t)
+	schema := TypeToSchema(t)
 
 	return Body{
 		Description: "",
@@ -122,13 +146,13 @@ func (this *SwaggerBuilder) CreateParameters(payload RoutePayload) []Parameter {
 	return parameters
 }
 
-func (this *SwaggerBuilder) Route(method string, path string) *RouteBuilder {
+func (this *SwaggerBuilder) Route(method string, path string, opt ...Options) *RouteBuilder {
 
 	if this.route != nil {
 		return this.route
 	}
 
-	builder := NewRouteBuilder(path, method)
+	builder := NewRouteBuilder(path, method, opt...)
 	return builder
 }
 

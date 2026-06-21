@@ -13,6 +13,17 @@ import (
 type OpenapiComponent struct {
 }
 
+type SwaggerDocument struct {
+	Openapi string `json:"openapi"`
+
+	Info SwaggerInfo `json:"info"`
+
+	Components map[string]OpenapiComponent `json:"components,omitempty"`
+
+	Paths map[string]map[string]Path `json:"paths,omitempty"`
+	//        ^ PATH     ^ METHOD
+}
+
 type Path struct {
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
@@ -63,8 +74,10 @@ type Body struct {
 }
 
 type Response struct {
-	Description string                     `json:"description"`
-	Content     map[string]MediaTypeObject `json:"content"`
+	Description string `json:"description"`
+
+	// key string is the media type - in this moment only application/json
+	Content map[string]MediaTypeObject `json:"content"`
 }
 
 type Parameter struct {
@@ -76,20 +89,9 @@ type Parameter struct {
 }
 
 type SwaggerInfo struct {
-	Title        string `json:"title"`
-	Descriptiotn string `json:"description"`
-	Version      string `json:"version"`
-}
-
-type SwaggerDocument struct {
-	Openapi string `json:"openapi"`
-
-	Info SwaggerInfo `json:"info"`
-
-	Components map[string]OpenapiComponent `json:"components,omitempty"`
-
-	Paths map[string]map[string]Path `json:"paths,omitempty"`
-	//        ^ PATH     ^ METHOD
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Version     string `json:"version"`
 }
 
 type WriteOptions struct {

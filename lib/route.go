@@ -180,7 +180,7 @@ func (this *RouteBuilder) AddBody(payload any, options ...Options) *RouteBuilder
 	// value in a map this.body.Content[mediaType].Schema = xxxx, because it is a fixed value not a pointer, so
 	// We need to copy it, change the field we want and then substitute the whole field value
 	mt := this.body.Content[mediaType]
-	mt.Schema = StructToSchema(t)
+	mt.Schema = TypeToSchema(t)
 	this.body.Content[mediaType] = mt
 
 	return this
@@ -211,7 +211,7 @@ func (this *RouteBuilder) AddResponse(statusCode int, payload any, options ...Op
 	if payload != nil {
 		t := reflect.TypeOf(payload)
 		resp.Content[mediaType] = MediaTypeObject{
-			Schema: StructToSchema(t),
+			Schema: TypeToSchema(t),
 		}
 	}
 

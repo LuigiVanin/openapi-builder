@@ -27,7 +27,7 @@ func TypeToSwagger(kind reflect.Kind) string {
 	}
 }
 
-func StructToSchema(t reflect.Type) Schema {
+func TypeToSchema(t reflect.Type) Schema {
 
 	schema := Schema{
 		Properties: map[string]Schema{},
@@ -47,7 +47,7 @@ func StructToSchema(t reflect.Type) Schema {
 	}
 
 	if t.Kind() == reflect.Array || t.Kind() == reflect.Slice {
-		s := StructToSchema(t.Elem())
+		s := TypeToSchema(t.Elem())
 		schema.Items = s.ToItems()
 
 		return schema
@@ -68,7 +68,7 @@ func StructToSchema(t reflect.Type) Schema {
 		}
 
 		if slices.Contains(compositeTypes, fieldKind) {
-			schema.Properties[fieldName] = StructToSchema(field.Type)
+			schema.Properties[fieldName] = TypeToSchema(field.Type)
 		}
 
 	}
