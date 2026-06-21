@@ -1,7 +1,7 @@
 package lib_test
 
 import (
-	sb "github.com/LuigiVanin/swagger-builder/lib"
+	openapi "github.com/LuigiVanin/openapi-builder/openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -14,10 +14,10 @@ func (this *DocumentTestSuite) SetupTest() {
 
 }
 
-func (this *DocumentTestSuite) CreatingDocumentPaht_Success() {
-	document := sb.SwaggerDocument{
+func (this *DocumentTestSuite) CreatingDocumentPath_Success() {
+	document := openapi.Document{
 		Openapi: "3.0.0",
-		Info: sb.SwaggerInfo{
+		Info: openapi.Info{
 			Title:       "Swagger Test",
 			Description: "Description Ha Ha!",
 			Version:     "3.0.0",

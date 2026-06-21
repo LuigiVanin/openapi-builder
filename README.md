@@ -8,18 +8,20 @@
 Too verbose and it will require a lot of boiler plate that is not infered by any LSP, it would make harder to use. Also, extend information its pretty much impossible, to add a description to a path it would require a new attribute on the Route struct (?), a description to a bodyRequest? even harder. 
 
 ```go
-		AddRoute(swg.Route{
-      Method:    "POST/{id}",
-			Path:      "/test",
-			Parameter: Parameter{},
-			Query:     Query{},
-      Body: map[string] { "aplication/json": RequestBody{} }
-      Responses: map[string]map[string]Response: { 
-        "200": { 
-          "application/json": Response{}
-        }
-      }
-    }).
+builder.AddRoute(
+  swg.Route{
+    Method:    "POST/{id}",
+    Path:      "/test",
+    Parameter: Parameter{},
+    Query:     Query{},
+    Body: map[string] { "aplication/json": RequestBody{} }
+    Responses: map[string]map[string]Response: { 
+      "200": { 
+        "application/json": Response{}
+      },
+    },
+  },
+)
 
 doc := builder.Build()
 doc.Write()
@@ -42,7 +44,7 @@ doc := builder.Build()
 doc.Write()
 ```
 
-Concept 3 (Discarted)
+### Concept 3 (Discarted)
 
 ```go
 builder := sb.NewSwaggerBuilder() 
@@ -59,7 +61,7 @@ doc := builder.Build()
 doc.Write()
 ```
 
-Concept 4 - Fluent / Builder
+### Concept 4 - Fluent / Builder
 
 ```go
 builder := sb.NewSwaggerBuilder() 
@@ -97,6 +99,10 @@ doc.Write()
  - [] Ref notation on each Schema
  - [] More Options Document
  - [] Tests
+  - [] Document tests
+  - [] Spec Document Builder tests
+  - [] Route builder tests
+  - [] Utils test
  - [] Library publication
 
 

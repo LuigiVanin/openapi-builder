@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	sb "github.com/LuigiVanin/swagger-builder/lib"
+	oas "github.com/LuigiVanin/openapi-builder/openapi"
 )
 
 type Parameter struct {
@@ -44,22 +44,22 @@ type Error struct {
 func main() {
 	fmt.Println("Hello World!")
 
-	builder := sb.NewSwaggerBuilder(
+	builder := oas.NewBuilder(
 		"Test API",
 		"This is a test API",
 		"1.0.0",
 	)
 
 	builder.Add(
-		builder.Route("POST", "test/", sb.Options{Summary: "Resumo do teste", Description: "Descrição do teste"}).
+		builder.Route("POST", "test/", oas.Options{Summary: "Resumo do teste", Description: "Descrição do teste"}).
 			AddTag("Teste").
 			AddPathParam("id", "integer").
 			AddQueryParam("name", "string").
-			AddBody(Body{}, sb.Options{Description: "main body hahaha", Required: true}),
+			AddBody(Body{}, oas.Options{Description: "main body hahaha", Required: true}),
 	)
 
 	builder = builder.
-		AddRoute(sb.Route{
+		AddRoute(oas.Route{
 			Method: "GET",
 			Path:   "/test",
 			Tags:   []string{"Teste"},
@@ -68,7 +68,7 @@ func main() {
 			Query:     Query{},
 		})
 
-	builder.AddRoute(sb.Route{
+	builder.AddRoute(oas.Route{
 		Path:   "/test",
 		Method: "PUT",
 		Body:   Body{},
@@ -83,12 +83,12 @@ func main() {
 			AddResponse(200, Response{}).
 			AddResponse(404, Error{}),
 	)
-	// 	AddRoute(sb.Route{
+	// 	AddRoute(oas.Route{
 	// 		Path:      "/test/{id}",
 	// 		Method:    "GET",
 	// 		Parameter: Parameter{},
 	// 	}).
-	// 	AddRoute(sb.Route{
+	// 	AddRoute(oas.Route{
 	// 		Path:      "/test/{id}",
 	// 		Method:    "GET",
 	// 		Parameter: Parameter{},

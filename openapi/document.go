@@ -1,4 +1,4 @@
-package swagger_builder
+package openapi
 
 import (
 	"encoding/json"
@@ -13,10 +13,10 @@ import (
 type OpenapiComponent struct {
 }
 
-type SwaggerDocument struct {
+type Document struct {
 	Openapi string `json:"openapi"`
 
-	Info SwaggerInfo `json:"info"`
+	Info Info `json:"info"`
 
 	Components map[string]OpenapiComponent `json:"components,omitempty"`
 
@@ -88,7 +88,7 @@ type Parameter struct {
 	Description string `json:"description"`
 }
 
-type SwaggerInfo struct {
+type Info struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Version     string `json:"version"`
@@ -100,7 +100,7 @@ type WriteOptions struct {
 	FileName   string
 }
 
-func (this *SwaggerDocument) Output(format string) ([]byte, error) {
+func (this *Document) Output(format string) ([]byte, error) {
 
 	var output []byte
 	var err error
@@ -115,10 +115,10 @@ func (this *SwaggerDocument) Output(format string) ([]byte, error) {
 	return output, err
 }
 
-func (this *SwaggerDocument) Write(options ...WriteOptions) error {
+func (this *Document) Write(options ...WriteOptions) error {
 	option := WriteOptions{
 		Formats:    []string{"yaml", "json"},
-		FolderPath: "swagger",
+		FolderPath: "openapi",
 		FileName:   "index",
 	} // default options
 

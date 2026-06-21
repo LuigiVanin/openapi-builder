@@ -1,4 +1,4 @@
-package swagger_builder
+package openapi
 
 import (
 	"maps"
@@ -7,19 +7,19 @@ import (
 	"strings"
 )
 
-type SwaggerBuilder struct {
-	document *SwaggerDocument /* `json:"document"` */
+type Builder struct {
+	document *Document /* `json:"document"` */
 	route    *RouteBuilder
 }
 
-func NewSwaggerBuilder(title string, description string, version string) *SwaggerBuilder {
-	return &SwaggerBuilder{
+func NewBuilder(title string, description string, version string) *Builder {
+	return &Builder{
 		route: nil,
 
-		document: &SwaggerDocument{
+		document: &Document{
 			Openapi: "3.0.4",
 
-			Info: SwaggerInfo{
+			Info: Info{
 				Title:       title,
 				Description: description,
 				Version:     version,
@@ -48,7 +48,7 @@ type RoutePayload struct {
 
 type Route = RoutePayload
 
-func (this *SwaggerBuilder) AddRoute(payload RoutePayload) *SwaggerBuilder {
+func (this *Builder) AddRoute(payload RoutePayload) *Builder {
 	method := strings.ToLower(payload.Method)
 	path := FormatRoutePath(payload.Path)
 	httpMethods := []string{"get", "put", "delete", "options", "patch", "post"}
@@ -78,7 +78,7 @@ func (this *SwaggerBuilder) AddRoute(payload RoutePayload) *SwaggerBuilder {
 	return this
 }
 
-func (this SwaggerBuilder) CreateResponse(responses map[string]any) map[string]Response {
+func (this Builder) CreateResponse(responses map[string]any) map[string]Response {
 	r := map[string]Response{}
 
 	for key, value := range maps.All(responses) {
@@ -97,7 +97,7 @@ func (this SwaggerBuilder) CreateResponse(responses map[string]any) map[string]R
 	return r
 }
 
-func (this SwaggerBuilder) CreateBody(body any) Body {
+func (this Builder) CreateBody(body any) Body {
 
 	if body == nil {
 		return Body{}
@@ -114,7 +114,7 @@ func (this SwaggerBuilder) CreateBody(body any) Body {
 	}
 }
 
-func (this *SwaggerBuilder) CreateParameters(payload RoutePayload) []Parameter {
+func (this *Builder) CreateParameters(payload RoutePayload) []Parameter {
 
 	// Copy of path
 	parameters := []Parameter{}
@@ -146,7 +146,7 @@ func (this *SwaggerBuilder) CreateParameters(payload RoutePayload) []Parameter {
 	return parameters
 }
 
-func (this *SwaggerBuilder) Route(method string, path string, opt ...Options) *RouteBuilder {
+func (this *Builder) Route(method string, path string, opt ...Options) *RouteBuilder {
 
 	if this.route != nil {
 		return this.route
@@ -156,7 +156,7 @@ func (this *SwaggerBuilder) Route(method string, path string, opt ...Options) *R
 	return builder
 }
 
-func (this *SwaggerBuilder) Add(route *RouteBuilder) {
+func (this *Builder) Add(route *RouteBuilder) {
 	path := route.Build()
 
 	for key, p := range path {
@@ -171,6 +171,6 @@ func (this *SwaggerBuilder) Add(route *RouteBuilder) {
 
 }
 
-func (this *SwaggerBuilder) Build() *SwaggerDocument {
+func (this *Builder) Build() *Document {
 	return this.document
 }

@@ -1,4 +1,4 @@
-module github.com/LuigiVanin/swagger-builder
+module github.com/LuigiVanin/openapi-builder
 
 go 1.25.3
 
