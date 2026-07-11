@@ -123,7 +123,7 @@ func (this *RouteBuilder) AddHeaderParam(name string, typename string, options .
 			Type:   typename,
 			Format: opt.Format,
 		},
-		In:          "query",
+		In:          "header",
 		Required:    opt.Required,
 		Description: opt.Description,
 	}
