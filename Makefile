@@ -1,13 +1,20 @@
-CMD_MAIN := ./cmd/builder/main.go
-CMD_SERVER := ./cmd/server/main.go
+CMD_MAIN := ./builder/main.go
+CMD_SERVER := ./server/main.go
 
-.PHONY: run server
+.PHONY: run server tests test-watch
 
 run:
 	air
 
 server: 
-	go run $(CMD_SERVER)
+	cd cmd && go run $(CMD_SERVER)
+
+
+test:
+	go test -v ./tests/
+
+test-watch:
+	air -c .air.test.toml
 
 %:
 	@:

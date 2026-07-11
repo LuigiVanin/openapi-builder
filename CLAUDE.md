@@ -1,4 +1,4 @@
-# swagger-builder
+# openapi-builder
 
 ## Role
 

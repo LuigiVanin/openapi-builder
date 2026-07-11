@@ -1,7 +1,7 @@
 tmp/
 .claude/
 swagger/
-openapi/
+# openapi/
 specs/
 
 # CLAUDE.md
