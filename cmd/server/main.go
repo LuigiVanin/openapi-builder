@@ -11,10 +11,12 @@ import (
 func main() {
 	fmt.Println("Hello World!")
 
-	spec, err := os.ReadFile("specs/index.yaml")
+	spec, err := os.ReadFile("../specs/index.json")
 
 	if err != nil {
 		fmt.Println("Erro: ", err.Error())
+
+		spec, _ = os.ReadFile("./specs/index.json")
 	}
 
 	http.Handle("/docs/", http.StripPrefix("/docs", swaggerui.Handler(spec)))

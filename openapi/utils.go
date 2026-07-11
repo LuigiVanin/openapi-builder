@@ -8,22 +8,31 @@ import (
 	"strings"
 )
 
+var (
+	Integer string = "integer"
+	String  string = "string"
+	Boolean string = "boolean"
+	Float   string = "number"
+	Array   string = "array"
+	Object  string = "object"
+)
+
 func TypeToSwagger(kind reflect.Kind) string {
 	switch kind {
 	case reflect.String:
-		return "string"
+		return String
 	case reflect.Int, reflect.Int64:
-		return "integer"
+		return Integer
 	case reflect.Bool:
-		return "boolean"
+		return Boolean
 	case reflect.Float32, reflect.Float64:
-		return "number"
+		return Float
 	case reflect.Struct, reflect.Map:
-		return "object"
+		return Object
 	case reflect.Array, reflect.Slice:
-		return "array"
+		return Array
 	default:
-		return "string"
+		return String
 	}
 }
 

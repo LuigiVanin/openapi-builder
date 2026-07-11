@@ -40,14 +40,14 @@ type Path struct {
 type Items struct {
 	Type       string            `json:"type,omitempty"`
 	Format     string            `json:"format,omitempty"`
-	Properties map[string]Schema `json:"properties,omitempty"`
+	Properties map[string]Schema `json:"properties,omitempty,omitzero"`
 	Ref        string            `json:"$ref,omitempty"`
 }
 
 type Schema struct {
 	Type       string            `json:"type,omitempty"`
 	Format     string            `json:"format,omitempty"`
-	Items      Items             `json:"items,omitempty"`
+	Items      Items             `json:"items,omitzero,,omitempty"`
 	Properties map[string]Schema `json:"properties,omitempty"`
 	Ref        string            `json:"$ref,omitempty"`
 }

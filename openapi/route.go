@@ -24,8 +24,9 @@ type RouteBuilder struct {
 	description string
 	tags        []string
 
-	pathParameters  map[string]Parameter
-	queryParameters map[string]Parameter
+	pathParameters   map[string]Parameter
+	queryParameters  map[string]Parameter
+	headerParameters map[string]Parameter
 
 	body      Body
 	responses map[string]Response
@@ -53,8 +54,10 @@ func NewRouteBuilder(path string, method string, options ...Options) *RouteBuild
 		summary:     opt.Summary,
 		description: opt.Description,
 
-		pathParameters:  map[string]Parameter{},
-		queryParameters: map[string]Parameter{},
+		pathParameters:   map[string]Parameter{},
+		queryParameters:  map[string]Parameter{},
+		headerParameters: map[string]Parameter{},
+
 		body: Body{
 			Content: map[string]MediaTypeObject{},
 		},
@@ -108,6 +111,38 @@ func (this *RouteBuilder) AddQueryParam(name string, typename string, options ..
 
 	return this
 }
+func (this *RouteBuilder) AddHeaderParam(name string, typename string, options ...Options) *RouteBuilder {
+	opt := Options{}
+	if len(options) > 0 {
+		opt = options[0]
+	}
+
+	this.headerParameters[name] = Parameter{
+		Name: name,
+		Schema: Schema{
+			Type:   typename,
+			Format: opt.Format,
+		},
+		In:          "query",
+		Required:    opt.Required,
+		Description: opt.Description,
+	}
+
+	return this
+}
+
+func (this *RouteBuilder) AddHeaderParams(payload any, options ...Options) *RouteBuilder {
+	t := reflect.TypeOf(payload)
+
+	parameters := TypeToParam(t)
+
+	for _, header := range parameters {
+		header.In = "header"
+		this.headerParameters[header.Name] = header
+	}
+
+	return this
+}
 
 func (this *RouteBuilder) AddQueryParams(payload any) *RouteBuilder {
 	t := reflect.TypeOf(payload)
@@ -144,6 +179,10 @@ func (this *RouteBuilder) mergePathQuery() []Parameter {
 	}
 
 	for _, query := range this.queryParameters {
+		params = append(params, query)
+	}
+
+	for _, query := range this.headerParameters {
 		params = append(params, query)
 	}
 

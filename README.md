@@ -86,6 +86,7 @@ doc.Write()
    - [x] Add Parameters
      - [x] Add Path
      - [x] Add Query
+     - [x] Add Header
    - [x] Add Body
    - [x] Add Response
    - [x] Metadata (via options)
@@ -93,21 +94,22 @@ doc.Write()
    - [x] Add Parameters
      - [x] Add Path
      - [x] Add Query
+     - [x] Add Header
    - [x] Add Body
    - [x] Add Response
-   - [ ] Metadata
+   - [x] Metadata
  - [ ] Multiple Media Types - curretly only `application/json`
  - [ ] Ref notation on each Schema
- - [ ] More Options Document
+ - [?] More Options Document
  - [ ] Tests
   - [ ] Document tests
   - [ ] Spec Document Builder tests
   - [ ] Route builder tests
   - [ ] Utils test
- - [ ] Library publication
+ - [x] Library publication
 
 ### Improvements
- - [ ] Json format always have empty `items: {}` field
+ - [x] Json format always have empty `items: {}` field
 
 
 

@@ -53,8 +53,8 @@ func main() {
 	builder.Add(
 		builder.Route("POST", "test/", oas.Options{Summary: "Resumo do teste", Description: "Descrição do teste"}).
 			AddTag("Teste").
-			AddPathParam("id", "integer").
-			AddQueryParam("name", "string").
+			AddPathParam("id", oas.Integer).
+			AddQueryParam("name", oas.Integer).
 			AddBody(Body{}, oas.Options{Description: "main body hahaha", Required: true}),
 	)
 
@@ -80,20 +80,10 @@ func main() {
 
 	builder.Add(
 		builder.Route("POST", "/customer").
+			AddHeaderParam("x-string", oas.String, oas.Options{Description: "Api key"}).
 			AddResponse(200, Response{}).
 			AddResponse(404, Error{}),
 	)
-	// 	AddRoute(oas.Route{
-	// 		Path:      "/test/{id}",
-	// 		Method:    "GET",
-	// 		Parameter: Parameter{},
-	// 	}).
-	// 	AddRoute(oas.Route{
-	// 		Path:      "/test/{id}",
-	// 		Method:    "GET",
-	// 		Parameter: Parameter{},
-	// 		Body:      Body{},
-	// 	})
 
 	document := builder.Build()
 	err := document.Write()

@@ -39,6 +39,7 @@ type RoutePayload struct {
 
 	Parameter any
 	Query     any
+	Header    any
 	Body      any
 
 	// String is the response status
@@ -119,10 +120,10 @@ func (this *Builder) CreateParameters(payload RoutePayload) []Parameter {
 	// Copy of path
 	parameters := []Parameter{}
 
-	for _, in := range []string{"path", "query"} {
+	for _, in := range []string{"path", "query", "header"} {
 
 		// Check if there is a parameter or query to be iterated
-		if (in == "path" && payload.Parameter == nil) || (in == "query" && payload.Query == nil) {
+		if (in == "path" && payload.Parameter == nil) || (in == "query" && payload.Query == nil) || (in == "header" && payload.Header == nil) {
 			continue
 		}
 
@@ -130,6 +131,8 @@ func (this *Builder) CreateParameters(payload RoutePayload) []Parameter {
 
 		if in == "query" {
 			parameter = payload.Query
+		} else if in == "header" {
+			parameter = payload.Header
 		}
 
 		t := reflect.TypeOf(parameter)
