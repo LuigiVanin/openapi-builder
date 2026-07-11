@@ -29,6 +29,16 @@ type Header struct {
 	ClientId string `json:"client-id"`
 }
 
+type UserPayload struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type ErrorPayload struct {
+	Error  bool   `json:"error"`
+	Reason string `json:"reason"`
+}
+
 func (this *BuilderTestSuite) SetupTest() {
 
 }
@@ -171,28 +181,69 @@ func (this *BuilderTestSuite) TestBuilderRouteBody_Success() {
 	builder := openapi.NewBuilder(title, description, "1.0.0")
 
 	builder.AddRoute(openapi.Route{
-		Method: "GET",
+		Method: "POST",
 		Path:   "/test",
 		Tags:   []string{"Teste"},
 
-		Parameter: Parameter{},
-		Query:     Query{},
-		Header:    Header{},
+		Body: UserPayload{},
 	})
 
 	document := builder.Build()
 
 	assert.NotNil(this.T(), document)
 
-	assert.Equal(this.T(), document.Info.Title, title)
-	assert.Equal(this.T(), document.Info.Description, description)
-
 	assert.NotNil(this.T(), document.Paths)
 	assert.NotEmpty(this.T(), document.Paths)
 
-	params := document.Paths["/test"]["get"].Parameters
+	body := document.Paths["/test"]["post"].RequestBody
 
-	assert.NotNil(this.T(), params)
-	assert.NotEmpty(this.T(), params)
+	assert.NotNil(this.T(), body.Content)
+	assert.Contains(this.T(), body.Content, "application/json")
+	assert.True(this.T(), body.Required)
 
+	schema := body.Content["application/json"].Schema
+
+	assert.Equal(this.T(), "object", schema.Type)
+	assert.Contains(this.T(), schema.Properties, "id")
+	assert.Contains(this.T(), schema.Properties, "name")
+}
+
+func (this *BuilderTestSuite) TestBuilderRouteResponse_Success() {
+	title := lib.GenerateText(10)
+	description := lib.GenerateText(10)
+
+	builder := openapi.NewBuilder(title, description, "1.0.0")
+
+	builder.AddRoute(openapi.Route{
+		Method: "POST",
+		Path:   "/test",
+		Tags:   []string{"Teste"},
+
+		Responses: map[string]any{
+			"200": UserPayload{},
+			"400": ErrorPayload{},
+		},
+	})
+
+	document := builder.Build()
+
+	assert.NotNil(this.T(), document)
+
+	responses := document.Paths["/test"]["post"].Responses
+
+	assert.NotEmpty(this.T(), responses)
+	assert.Contains(this.T(), responses, "200")
+	assert.Contains(this.T(), responses, "400")
+
+	okResponse := responses["200"]
+	assert.Contains(this.T(), okResponse.Content, "application/json")
+
+	okSchema := okResponse.Content["application/json"].Schema
+	assert.Equal(this.T(), "object", okSchema.Type)
+	assert.Contains(this.T(), okSchema.Properties, "id")
+	assert.Contains(this.T(), okSchema.Properties, "name")
+
+	errSchema := responses["400"].Content["application/json"].Schema
+	assert.Contains(this.T(), errSchema.Properties, "error")
+	assert.Contains(this.T(), errSchema.Properties, "reason")
 }
