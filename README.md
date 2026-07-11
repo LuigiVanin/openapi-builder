@@ -192,11 +192,11 @@ Then open `http://localhost:8080/docs/` to browse the documentation.
  - [ ] Multiple Media Types - currently only `application/json`
  - [ ] Ref notation on each Schema
  - [?] More Options Document
- - [ ] Tests
-   - [ ] Document tests
-   - [ ] Spec Document Builder tests
-   - [ ] Route builder tests
-   - [ ] Utils test
+ - [x] Tests
+   - [x] Document tests
+   - [x] Spec Document Builder tests
+   - [x] Route builder tests
+   - [x] Utils test
  - [x] Library publication
 
 ### Improvements
