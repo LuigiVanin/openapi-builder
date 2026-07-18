@@ -170,6 +170,25 @@ func main() {
 
 Then open `http://localhost:8080/docs/` to browse the documentation.
 
+## Running
+
+### Tests
+
+To run tests you can use the make short command or run a raw go test command:
+
+```bash
+> make tests
+> go test -v ./tests/...
+```
+
+### Linting
+
+Use the golangci-lint version v2.5.0
+
+```bash
+> golangci-lint run ./...
+```
+
 ## Roadmap
 
 ### Features
