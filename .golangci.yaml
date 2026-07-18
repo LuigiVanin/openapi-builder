@@ -12,3 +12,10 @@ linters:
     - staticcheck
     - unused
     # - errorlint
+
+  settings:
+    staticcheck:
+      checks:
+        - all
+        - -ST1006
+        - -ST1003

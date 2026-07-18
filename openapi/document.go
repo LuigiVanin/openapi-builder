@@ -136,7 +136,7 @@ func (this *Document) Write(options ...WriteOptions) error {
 		output, err := this.Output(format)
 
 		if err != nil {
-			fmt.Println("Erro ao converter para Yaml")
+			fmt.Println("Could not convert to Yaml")
 			return err
 		}
 
@@ -156,12 +156,17 @@ func (this *Document) Write(options ...WriteOptions) error {
 			return err
 		}
 
-		defer file.Close()
+		defer func() {
+			err := file.Close()
+			if err != nil {
+				fmt.Println("Error on closing file connection!")
+			}
+		}()
 
 		_, err = file.Write(output)
 
 		if err != nil {
-			fmt.Println("Erro ao tentar escrever no arquivo")
+			fmt.Println("Trying to write in file failed")
 			return err
 		}
 	}

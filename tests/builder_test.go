@@ -1,3 +1,4 @@
+// Package lib_test provides tests for the openapi builder package
 package lib_test
 
 import (

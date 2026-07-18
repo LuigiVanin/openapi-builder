@@ -1,3 +1,4 @@
+// Package lib is a helper package for the opeapi builder package
 package lib
 
 import (
@@ -6,7 +7,7 @@ import (
 )
 
 func GenerateText(length uint) string {
-	var characters string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	characters := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	var result strings.Builder
 
 	for range length {

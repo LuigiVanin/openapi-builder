@@ -1,3 +1,6 @@
+// Package openapi builder provides a simple package for building an Open Api Spec document
+// following the version 3.0. This package uses the builder pattern to create each route
+// of an api.
 package openapi
 
 import (
@@ -129,9 +132,10 @@ func (this *Builder) CreateParameters(payload RoutePayload) []Parameter {
 
 		parameter := payload.Parameter
 
-		if in == "query" {
+		switch in {
+		case "query":
 			parameter = payload.Query
-		} else if in == "header" {
+		case "header":
 			parameter = payload.Header
 		}
 
