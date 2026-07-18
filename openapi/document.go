@@ -47,7 +47,7 @@ type Items struct {
 type Schema struct {
 	Type       string            `json:"type,omitempty"`
 	Format     string            `json:"format,omitempty"`
-	Items      Items             `json:"items,omitzero,,omitempty"`
+	Items      Items             `json:"items,omitzero,omitempty"`
 	Properties map[string]Schema `json:"properties,omitempty"`
 	Ref        string            `json:"$ref,omitempty"`
 }
