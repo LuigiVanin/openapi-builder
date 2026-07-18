@@ -31,6 +31,7 @@ jobs:
         uses: golangci/golangci-lint-action@v7
         with:
           version: v2.5.0
+          verify: false
   
   build:
     name: Build Lib
