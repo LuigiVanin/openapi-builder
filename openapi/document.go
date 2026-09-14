@@ -40,8 +40,19 @@ type Path struct {
 type Items struct {
 	Type       string            `json:"type,omitempty"`
 	Format     string            `json:"format,omitempty"`
+	Items      *Items            `json:"items,omitempty"`
 	Properties map[string]Schema `json:"properties,omitempty,omitzero"`
 	Ref        string            `json:"$ref,omitempty"`
+}
+
+// IsZero é o que o `omitzero` de Schema.Items consulta para não emitir um
+// `items: {}` em schema que não é lista.
+func (this Items) IsZero() bool {
+	return this.Type == "" &&
+		this.Format == "" &&
+		this.Ref == "" &&
+		this.Items == nil &&
+		len(this.Properties) == 0
 }
 
 type Schema struct {
@@ -53,12 +64,21 @@ type Schema struct {
 }
 
 func (this Schema) ToItems() Items {
-	return Items{
+	items := Items{
 		Type:       this.Type,
 		Properties: this.Properties,
 		Ref:        this.Ref,
 		Format:     this.Format,
 	}
+
+	// Lista de lista: o nível de dentro precisa descer junto, senão `[][]string`
+	// perde o tipo do item interno.
+	if !this.Items.IsZero() {
+		nested := this.Items
+		items.Items = &nested
+	}
+
+	return items
 }
 
 type MediaTypeObject struct {

@@ -12,13 +12,10 @@ import (
 
 type Builder struct {
 	document *Document /* `json:"document"` */
-	route    *RouteBuilder
 }
 
 func NewBuilder(title string, description string, version string) *Builder {
 	return &Builder{
-		route: nil,
-
 		document: &Document{
 			Openapi: "3.0.4",
 
@@ -153,14 +150,10 @@ func (this *Builder) CreateParameters(payload RoutePayload) []Parameter {
 	return parameters
 }
 
+// Route abre um RouteBuilder novo a cada chamada. O resultado só entra no
+// documento depois de passar por Add.
 func (this *Builder) Route(method string, path string, opt ...Options) *RouteBuilder {
-
-	if this.route != nil {
-		return this.route
-	}
-
-	builder := NewRouteBuilder(path, method, opt...)
-	return builder
+	return NewRouteBuilder(path, method, opt...)
 }
 
 func (this *Builder) Add(route *RouteBuilder) {
