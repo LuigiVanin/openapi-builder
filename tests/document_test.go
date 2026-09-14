@@ -1,6 +1,9 @@
 package lib_test
 
 import (
+	"encoding/json"
+	"reflect"
+	"strings"
 	"testing"
 
 	openapi "github.com/LuigiVanin/openapi-builder/openapi"
@@ -131,4 +134,41 @@ func (this *DocumentTestSuite) TestDocumentWithPath_Success() {
 	assert.Contains(this.T(), json, description)
 	assert.Contains(this.T(), json, tags[0])
 
+}
+
+func (this *DocumentTestSuite) TestScalarSchemaDoesNotEmitEmptyItems_Success() {
+	schema := openapi.TypeToSchema(reflect.TypeOf("texto"))
+
+	raw, err := json.Marshal(schema)
+
+	assert.NoError(this.T(), err)
+	assert.JSONEq(this.T(), `{"type":"string"}`, string(raw))
+}
+
+func (this *DocumentTestSuite) TestNestedItemsSerializeInJson_Success() {
+	schema := openapi.TypeToSchema(reflect.TypeOf([][]int{}))
+
+	raw, err := json.Marshal(schema)
+
+	assert.NoError(this.T(), err)
+	assert.JSONEq(
+		this.T(),
+		`{"type":"array","items":{"type":"array","items":{"type":"integer"}}}`,
+		string(raw),
+	)
+}
+
+func (this *DocumentTestSuite) TestNestedItemsSerializeInYaml_Success() {
+	builder := openapi.NewBuilder(lib.GenerateText(10), lib.GenerateText(10), "1.0.0")
+
+	builder.AddRoute(openapi.Route{
+		Method: "POST",
+		Path:   "/matrix",
+		Body:   [][]string{},
+	})
+
+	output, err := builder.Build().Output("yaml")
+
+	assert.NoError(this.T(), err)
+	assert.Equal(this.T(), 2, strings.Count(string(output), "items:"))
 }

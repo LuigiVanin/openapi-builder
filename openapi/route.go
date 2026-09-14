@@ -151,7 +151,7 @@ func (this *RouteBuilder) AddQueryParams(payload any) *RouteBuilder {
 
 	for _, param := range parameters {
 		param.In = "query"
-		this.pathParameters[param.Name] = param
+		this.queryParameters[param.Name] = param
 	}
 
 	return this

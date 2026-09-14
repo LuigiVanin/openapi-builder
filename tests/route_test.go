@@ -143,3 +143,67 @@ func (this *RouteTestSuite) TestRouteBuilderResponse_Success() {
 
 	assert.Equal(this.T(), "not found", responses["404"].Description)
 }
+
+func (this *RouteTestSuite) TestRouteBuilderQueryParamsFromStruct_Success() {
+	type Filter struct {
+		Page int    `json:"page"`
+		Term string `json:"term,omitempty"`
+	}
+
+	route := openapi.NewRouteBuilder("/test", "GET").AddQueryParams(Filter{})
+
+	params := route.Build()["/test"]["get"].Parameters
+
+	assert.Len(this.T(), params, 2)
+
+	for _, param := range params {
+		assert.Equal(this.T(), "query", param.In, param.Name)
+	}
+}
+
+// Path e query com o mesmo nome viviam no mesmo mapa e um sobrescrevia o outro.
+func (this *RouteTestSuite) TestRouteBuilderPathAndQueryParamsDoNotCollide_Success() {
+	type PathParams struct {
+		Id string `json:"id"`
+	}
+
+	type QueryParams struct {
+		Id string `json:"id"`
+	}
+
+	route := openapi.NewRouteBuilder("/test/{id}", "GET").
+		AddPathParams(PathParams{}).
+		AddQueryParams(QueryParams{})
+
+	params := route.Build()["/test/{id}"]["get"].Parameters
+
+	assert.Len(this.T(), params, 2)
+
+	locations := []string{}
+	for _, param := range params {
+		assert.Equal(this.T(), "id", param.Name)
+		locations = append(locations, param.In)
+	}
+
+	assert.Contains(this.T(), locations, "path")
+	assert.Contains(this.T(), locations, "query")
+}
+
+func (this *RouteTestSuite) TestRouteBuilderQueryParamsAreOptionalWithOmitempty_Success() {
+	type Filter struct {
+		Page int    `json:"page"`
+		Term string `json:"term,omitempty"`
+	}
+
+	route := openapi.NewRouteBuilder("/test", "GET").AddQueryParams(Filter{})
+
+	params := route.Build()["/test"]["get"].Parameters
+
+	required := map[string]bool{}
+	for _, param := range params {
+		required[param.Name] = param.Required
+	}
+
+	assert.True(this.T(), required["page"])
+	assert.False(this.T(), required["term"])
+}

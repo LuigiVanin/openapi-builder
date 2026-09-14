@@ -248,3 +248,24 @@ func (this *BuilderTestSuite) TestBuilderRouteResponse_Success() {
 	assert.Contains(this.T(), errSchema.Properties, "error")
 	assert.Contains(this.T(), errSchema.Properties, "reason")
 }
+
+// Route devolvia sempre um builder novo, mas guardava uma checagem morta de um
+// campo que nunca era preenchido.
+func (this *BuilderTestSuite) TestBuilderRouteReturnsANewBuilderPerCall_Success() {
+	builder := openapi.NewBuilder(lib.GenerateText(10), lib.GenerateText(10), "1.0.0")
+
+	first := builder.Route("GET", "/first")
+	second := builder.Route("POST", "/second")
+
+	assert.NotSame(this.T(), first, second)
+
+	builder.Add(first)
+	builder.Add(second)
+
+	document := builder.Build()
+
+	assert.Contains(this.T(), document.Paths, "/first")
+	assert.Contains(this.T(), document.Paths["/first"], "get")
+	assert.Contains(this.T(), document.Paths, "/second")
+	assert.Contains(this.T(), document.Paths["/second"], "post")
+}
